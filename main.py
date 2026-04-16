@@ -3,6 +3,7 @@ import os
 import requests
 
 url = 'https://dvmn.org/media/HST-SM4.jpeg'
+spacex_api_url = 'https://api.spacexdata.com/v5/launches/61fc0243e0dc5662b76489ae'
 path = 'images'
 
 proxies = {
@@ -21,7 +22,16 @@ def get_picture(url, path):
         file.write(response.content)
 
 
+def get_pucture_from_spacex(url):
+    response = requests.get(url)
+    response.raise_for_status()
+
+    print(response.json()['links']['flickr']['original'])
+
+
 if __name__ == '__main__':
     #get_picture(url, path)
 
-    print(requests.get('https://api.ipify.org', proxies=proxies).text)
+    #print(requests.get('https://api.ipify.org', proxies=proxies).text)
+
+    get_pucture_from_spacex(spacex_api_url)
