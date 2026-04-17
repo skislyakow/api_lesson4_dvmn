@@ -15,7 +15,7 @@ def get_picture(url, path, index):
     os.makedirs(path, exist_ok=True)
 
     #response = requests.get(url, proxies=proxies)
-    response = requests.get(url)
+    response = requests.get(url, proxies=proxies)
     response.raise_for_status()
     
     with open(f'{path}/spacex_{index}.jpeg', 'wb') as file:
