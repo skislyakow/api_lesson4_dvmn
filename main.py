@@ -41,4 +41,4 @@ if __name__ == '__main__':
 
     #print(requests.get('https://api.ipify.org', proxies=proxies).text)
 
-    get_pucture_from_spacex(spacex_api_url)
+    fetch_spacex_last_launch(spacex_api_url)
