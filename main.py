@@ -23,7 +23,7 @@ def get_picture(url, path, index):
         
 
 
-def get_pucture_from_spacex(url):
+def fetch_spacex_last_launch(url):
     response = requests.get(url)
     response.raise_for_status()
 
