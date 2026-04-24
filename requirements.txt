@@ -1,4 +1,4 @@
 requests
 requests[socks]
 legacy-cgi
-python-dotenv
+environs

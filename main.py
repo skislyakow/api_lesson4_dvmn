@@ -1,26 +1,21 @@
 import os
+from os.path import split, splitext
+from urllib.parse import urlsplit, unquote
 
 import requests
 
-from dotenv import load_dotenv
+from environs import Env
 
 #url = 'https://dvmn.org/media/HST-SM4.jpeg'
-spacex_api_url = 'https://api.spacexdata.com/v5/launches/61fc0243e0dc5662b76489ae'
-path = 'images'
 
-proxies = {
-    'http': 'socks5://89.169.168.25:1080',
-    'https': 'socks5://89.169.168.25:1080',
-    }
+
 
 def get_picture(url, path, index):
     os.makedirs(path, exist_ok=True)
-
-    #response = requests.get(url, proxies=proxies)
     response = requests.get(url, proxies=proxies)
     response.raise_for_status()
     
-    with open(f'{path}/spacex_{index}.jpeg', 'wb') as file:
+    with open(f'{path}/spacex_{index}{get_file_extension(url)}', 'wb') as file:
         file.write(response.content)
         
 
@@ -38,17 +33,43 @@ def fetch_spacex_last_launch(url):
 
 
 def fetch_apod():
-    apod_url = 'https://api.nasa.gov/planetary/apod?api_key=API_KEY'
-    response = requests.get(apod_url, proxies=proxies)
+    os.makedirs(path, exist_ok=True)
+    response = requests.get(apod_url)
     response.raise_for_status()
 
-    with open(f'{path}/apod.jpeg', 'wb') as file:
-        file.write(response.content)
+    url_photo = response.json()['hdurl']
+    apod = requests.get(url_photo)
+    with open(f'{path}/apod{get_file_extension(url_photo)}', 'wb') as file:
+        file.write(apod.content)
+
+    #print(url_photo)
+    
+
+    #with open(f'{path}/apod.jpeg', 'wb') as file:
+        #file.write(response.content)
+
+def get_file_extension(url: str) -> str:
+    path_only = urlsplit(url).path
+    decoded_url = unquote(path_only)
+    _, filename = split(decoded_url)
+    _, extension = splitext(filename)
+    return extension
        
 
 
 if __name__ == '__main__':
-    load_dotenv()
+    env = Env()
+    env.read_env()
+    api_key = env.str("NASA_DEMO_API")
+    apod_url = f'https://api.nasa.gov/planetary/apod?api_key={api_key}'
+    spacex_api_url = 'https://api.spacexdata.com/v5/launches/61fc0243e0dc5662b76489ae'
+    path = 'images'
+
+    proxies = {
+        'http': 'socks5://89.169.168.25:1080',
+        'https': 'socks5://89.169.168.25:1080',
+        }
+    #load_dotenv()
     #get_picture(url, path)
 
     #print(requests.get('https://api.ipify.org', proxies=proxies).text)
