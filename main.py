@@ -37,11 +37,13 @@ def fetch_apod():
     try:
         response = requests.get(apod_url)
         response.raise_for_status()
-        url_photo = response.json()['hdurl']
-        apod = requests.get(url_photo)
-        extension = get_file_extension(url_photo)
-        with open(f'{path}/apod{extension}', 'wb') as file:
-            file.write(apod.content)
+        apod_list = response.json()
+        for index, apod in enumerate(apod_list):
+            url_photo = apod['hdurl']
+            extension = get_file_extension(url_photo)
+            photo = requests.get(url_photo)
+            with open(f'{path}/apod_{index}{extension}', 'wb') as file:
+                file.write(photo.content) 
     except requests.exceptions.HTTPError as error:
         print(f'Ошибка HTTP: {error}')
     except requests.exceptions.ConnectionError as error:
@@ -61,7 +63,7 @@ if __name__ == '__main__':
     env = Env()
     env.read_env()
     api_key = env.str("NASA_DEMO_API")
-    apod_url = f'https://api.nasa.gov/planetary/apod?api_key={api_key}'
+    apod_url = f'https://api.nasa.gov/planetary/apod?api_key={api_key}&count=30'
     spacex_api_url = 'https://api.spacexdata.com/v5/launches/61fc0243e0dc5662b76489ae'
     path = 'images'
 
