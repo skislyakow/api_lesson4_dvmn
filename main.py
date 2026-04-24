@@ -34,19 +34,19 @@ def fetch_spacex_last_launch(url):
 
 def fetch_apod():
     os.makedirs(path, exist_ok=True)
-    response = requests.get(apod_url)
-    response.raise_for_status()
+    try:
+        response = requests.get(apod_url)
+        response.raise_for_status()
+        url_photo = response.json()['hdurl']
+        apod = requests.get(url_photo)
+        extension = get_file_extension(url_photo)
+        with open(f'{path}/apod{extension}', 'wb') as file:
+            file.write(apod.content)
+    except requests.exceptions.HTTPError as error:
+        print(f'Ошибка HTTP: {error}')
+    except requests.exceptions.ConnectionError as error:
+        print(f'Ошибка соединения: {error}')
 
-    url_photo = response.json()['hdurl']
-    apod = requests.get(url_photo)
-    with open(f'{path}/apod{get_file_extension(url_photo)}', 'wb') as file:
-        file.write(apod.content)
-
-    #print(url_photo)
-    
-
-    #with open(f'{path}/apod.jpeg', 'wb') as file:
-        #file.write(response.content)
 
 def get_file_extension(url: str) -> str:
     path_only = urlsplit(url).path
