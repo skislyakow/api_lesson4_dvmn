@@ -54,14 +54,46 @@ def fetch_apod(base_url, path, primary_key):
             except requests.exceptions.HTTPError as error2:
                 print(f'DEMO_KEY, ошибка: {error2.response.status_code}')
                 return
-            
+
     apod_list = response.json()
     for index, apod in enumerate(apod_list):
         url_photo = apod['hdurl']
         extension = get_file_extension(url_photo)
         photo = requests.get(url_photo)
         with open(f'{path}/apod_{index}{extension}', 'wb') as file:
-            file.write(photo.content) 
+            file.write(photo.content)
+
+def fetch_epic(base_url='https://api.nasa.gov/EPIC/api/natural/', api_key=None):
+    os.makedirs(PATH, exist_ok=True)
+
+    params = {'api_key': api_key or DEMO_KEY}
+    response = requests.get(base_url, params=params)
+    response.raise_for_status()
+
+    images = response.json()
+
+    for image_data in images:
+        filename = image_data['image']
+        date_str = filename[9:17]
+
+        year = date_str[:4]
+        month = date_str[4:6]
+        day = date_str[6:8]
+
+        archive_url = (
+            f'https://api.nasa.gov/EPIC/archive/natural/'
+            f'{year}/{month}/{day}/png/{filename}.png'
+        )
+
+        final_url = f'{archive_url}?api_key={params["api_key"]}'
+        response = requests.get(final_url, proxies=proxies)
+        response.raise_for_status()
+
+        extension = get_file_extension(final_url)
+        filepath = f'{PATH}/epic_{date_str}{extension}'
+
+        with open(filepath, 'wb') as file:
+            file.write(response.content)
 
 
 def get_file_extension(url: str) -> str:
