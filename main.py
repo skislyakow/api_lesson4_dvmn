@@ -52,7 +52,6 @@ def fetch_apod(base_url, path, primary_key):
                 response = make_request(DEMO_KEY)
                 response.raise_for_status()
             except requests.exceptions.HTTPError as error2:
-                print(f'Основной ключ, ошибка: {error.response.status_code}')
                 print(f'DEMO_KEY, ошибка: {error2.response.status_code}')
                 return
             
