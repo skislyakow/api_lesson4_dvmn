@@ -1,6 +1,9 @@
+import json
 import os
 from os.path import split, splitext
 from urllib.parse import urlsplit, unquote, urlencode
+from requests.exceptions import ConnectTimeout, ProxyError, HTTPError
+import time
 
 import requests
 
@@ -15,7 +18,6 @@ def get_picture(url, path, index):
     os.makedirs(path, exist_ok=True)
     response = requests.get(url, proxies=proxies)
     response.raise_for_status()
-    
     with open(f'{path}/spacex_{index}{get_file_extension(url)}', 'wb') as file:
         file.write(response.content)
 
@@ -23,12 +25,8 @@ def get_picture(url, path, index):
 def fetch_spacex_last_launch(url):
     response = requests.get(url)
     response.raise_for_status()
-
     url_photos_json = response.json()['links']['flickr']['original']
-    print(url_photos_json)    
-    
     for index, url in enumerate(url_photos_json):
-        
         get_picture(url, PATH, index)
 
 
@@ -63,18 +61,44 @@ def fetch_apod(base_url, path, primary_key):
         with open(f'{path}/apod_{index}{extension}', 'wb') as file:
             file.write(photo.content)
 
-def fetch_epic(base_url='https://api.nasa.gov/EPIC/api/natural/', api_key=None):
+
+def fetch_epic(
+        base_url='https://api.nasa.gov/EPIC/api/natural/',
+        api_key='3OIsmDUgp5YXdtm30KNE68BksnxshZGADgueTgGm',
+        example_file='example_epic.json'
+):
+    print(f'Получил api_key: {api_key}')
     os.makedirs(PATH, exist_ok=True)
+    api_key = api_key if api_key else DEMO_KEY
+    params = {'api_key': api_key}
 
-    params = {'api_key': api_key or DEMO_KEY}
-    response = requests.get(base_url, params=params)
-    response.raise_for_status()
+    if os.path.exists(example_file):
+        print(f'Загрузка данных из {example_file}')
+        with open(example_file, 'r') as file:
+            images = json.load(file)
+    else:
+        print('Загрузка с сайта NASA')
 
-    images = response.json()
+        def make_request(api_key):
+            print(f'Запрашиваю метаданные с ключом: {api_key}')
+            response = requests.get(base_url, params=params)
+            response.raise_for_status()
+            return response.json(), params
+
+        try:
+            images, params = make_request(api_key)
+        except requests.exceptions.HTTPError as error:
+            if error.response.status_code == 403:
+                print('NASA_DEMO_API не работает, использую DEMO_KEY')
+                images, params = make_request(DEMO_KEY)
+            else:
+                print(f'Ошибка: {error}')
+                return
 
     for image_data in images:
+        time.sleep(2)
         filename = image_data['image']
-        date_str = filename[9:17]
+        date_str = filename[8:16]
 
         year = date_str[:4]
         month = date_str[4:6]
@@ -86,11 +110,18 @@ def fetch_epic(base_url='https://api.nasa.gov/EPIC/api/natural/', api_key=None):
         )
 
         final_url = f'{archive_url}?api_key={params["api_key"]}'
-        response = requests.get(final_url, proxies=proxies)
-        response.raise_for_status()
+        try:
+            print(f'Скачиваю {filename} с ключом: {params["api_key"]}')
+            response = requests.get(final_url)
+            response.raise_for_status()
+        except (ConnectTimeout, ProxyError) as error:
+            print(f'Ошибка {error}: прокси не отвечает')
+            continue
+        except HTTPError as error2:
+            print(f'Ошибка {error2}:')
 
         extension = get_file_extension(final_url)
-        filepath = f'{PATH}/epic_{date_str}{extension}'
+        filepath = f'{PATH}/epic_{filename}{extension}'
 
         with open(filepath, 'wb') as file:
             file.write(response.content)
@@ -115,4 +146,6 @@ if __name__ == '__main__':
         'http': 'socks5://89.169.168.25:1080',
         'https': 'socks5://89.169.168.25:1080',
         }
-    fetch_apod(base_apod_url, PATH, api_key)
+    #fetch_apod(base_apod_url, PATH, api_key)
+    print(f'Ключ из .env: {api_key}') 
+    fetch_epic(env.str("NASA_DEMO_API"))
