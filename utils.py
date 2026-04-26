@@ -13,7 +13,7 @@ DEMO_KEY = 'DEMO_KEY'
 def get_file_extension(url: str) -> str:
     path_only = urlsplit(url).path
     decoded_url = unquote(path_only)
-    _, extension = os.path.split(decoded_url)
+    _, extension = os.path.splitext(decoded_url[1])
     return extension
 
 
@@ -27,7 +27,7 @@ def get_proxies() -> dict | None:
     return None
 
 
-def get_picture(url: filepath, proxies=None):
+def get_picture(url, filepath: str, proxies=None):
     Path(filepath).parent.mkdir(parents=True, exist_ok=True)
     response = requests.get(url, proxies=proxies)
     response.raise_for_status()

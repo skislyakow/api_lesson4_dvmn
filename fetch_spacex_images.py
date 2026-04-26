@@ -13,7 +13,7 @@ def fetch_spacex(launch_id: str | None = None, output_dir: str = DEFAULT_PATH):
     proxies = get_proxies()
 
     if launch_id:
-        url = f'https://api.spacexdata.com/v5/ launches/{launch_id}'
+        url = f'https://api.spacexdata.com/v5/launches/{launch_id}'
     else:
         url = 'https://api.spacexdata.com/v5/launches/query'
 
@@ -27,7 +27,7 @@ def fetch_spacex(launch_id: str | None = None, output_dir: str = DEFAULT_PATH):
         }
         response = requests.post(url, json=payload, proxies=proxies)
         response.raise_for_status()
-        data = response.json['docs'][0]
+        data = response.json()['docs'][0]
 
     photos = data['links']['flickr']['original']
     os.makedirs(output_dir, exist_ok=True)
