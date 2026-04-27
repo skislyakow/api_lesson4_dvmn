@@ -7,10 +7,10 @@ from environs import Env
 from utils import DEFAULT_PATH, get_file_extension, get_picture, get_proxies
 
 
-def fetch_spacex(launch_id: str | None = None, output_dir: str = DEFAULT_PATH):
+def fetch_spacex(launch_id: str | None = None, output_dir: str = DEFAULT_PATH, use_proxy: bool = False):
     env = Env()
     env.read_env()
-    proxies = get_proxies()
+    proxies = get_proxies() if use_proxy else None
 
     if launch_id:
         url = f'https://api.spacexdata.com/v5/launches/{launch_id}'
@@ -41,9 +41,10 @@ def fetch_spacex(launch_id: str | None = None, output_dir: str = DEFAULT_PATH):
 def main():
     parser = argparse.ArgumentParser(description='Скачать фото SpaceX')
     parser.add_argument('-i', '--launch-id', help='ID запуска (опционально)')
+    parser.add_argument('-p', '--use-proxy', action='store_true', help='Использовать прокси')
     args = parser.parse_args()
 
-    fetch_spacex(args.launch_id)
+    fetch_spacex(args.launch_id, use_proxy=args.use_proxy)
 
 
 if __name__ == '__main__':
