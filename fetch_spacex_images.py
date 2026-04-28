@@ -21,14 +21,9 @@ def fetch_spacex(
     else:
         url = 'https://api.spacexdata.com/v5/launches/latest'
 
-    if launch_id:
-        response = requests.get(url, proxies=proxies)
-        response.raise_for_status()
-        data = response.json()
-    else:
-        response = requests.get(url, proxies=proxies)
-        response.raise_for_status()
-        data = response.json()
+    response = requests.get(url, proxies=proxies)
+    response.raise_for_status()
+    data = response.json()
 
     photos = data['links']['flickr']['original']
     if not photos:
