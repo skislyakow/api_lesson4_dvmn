@@ -21,8 +21,8 @@ def get_file_extension(url: str) -> str:
 def get_proxies() -> dict | None:
     env = Env()
     env.read_env()
-    http_proxy = env.strOrNone('HTTP_PROXY')
-    https_proxy = env.strOrNone('HTTPS_PROXY')
+    http_proxy = os.environ.get('HTTP_PROXY')
+    https_proxy = os.environ.get('HTTPS_PROXY')
     if http_proxy and https_proxy:
         return {'http': http_proxy, 'https': https_proxy}
     return None
