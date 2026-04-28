@@ -2,3 +2,4 @@ requests
 requests[socks]
 legacy-cgi
 environs
+python-telegram-bot==13.*
