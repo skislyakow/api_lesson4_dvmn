@@ -1,7 +1,7 @@
 import argparse
 
 import telegram
-from telegram.error import NetworkError, TimedOut
+from telegram.error import NetworkError, TimedOut, BadRequest
 from telegram.utils.request import Request
 from environs import Env
 
@@ -30,6 +30,13 @@ def main():
             token=env.str('TELEGRAM_BOT_TOKEN'), request=request
         )
         print(bot.get_me())
+
+        channel_id = env.str('TELEGRAM_CHANNEL_ID')
+        message_text = 'Привет от Python-бота!'
+        bot.send_message(chat_id=channel_id, text=message_text)
+
+    except BadRequest as e:
+        print(f'Ошибка запроса (неверный chat_id?): {e}')
     except (NetworkError, TimedOut) as e:
         print(f'Ошибка сети при подключении к Telegram: {e}')
     except Exception as e:
