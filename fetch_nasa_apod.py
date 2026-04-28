@@ -16,7 +16,7 @@ def fetch_apod(
     env = Env()
     env.read_env()
     api_key = env.str('NASA_API_KEY', DEMO_KEY)
-    proxies = get_proxies()
+    proxies = get_proxies() if use_proxy else None
 
     url = 'https://api.nasa.gov/planetary/apod'
     try:
