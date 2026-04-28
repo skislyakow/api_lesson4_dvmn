@@ -13,7 +13,8 @@ DEMO_KEY = 'DEMO_KEY'
 def get_file_extension(url: str) -> str:
     path_only = urlsplit(url).path
     decoded_url = unquote(path_only)
-    _, extension = os.path.splitext(decoded_url[1])
+    filename = os.path.basename(decoded_url)
+    _, extension = os.path.splitext(filename)
     return extension
 
 
