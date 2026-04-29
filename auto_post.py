@@ -12,6 +12,7 @@ from utils import get_proxies
 
 
 def main():
+    #default_interval = env.float('POST_INTERVAL_HOURS', default=4.0)
     parser = argparse.ArgumentParser(
         description='Авто-постинг фото в Telegram канал'
     )
@@ -19,7 +20,10 @@ def main():
         'directory', nargs='?', default='images', help='Папка с изображениями'
     )
     parser.add_argument(
-        '--interval', type=float, help='Интервал публикации в часах'
+        '--interval',
+        type=float,
+        default=4.0,
+        help='Интервал публикации в часах'
     )
     parser.add_argument(
         '-p', '--use-proxy', action='store_true', help='Использовать прокси'
@@ -27,14 +31,8 @@ def main():
     args = parser.parse_args()
     env = Env()
     env.read_env()
-
-    if args.interval:
-        hours = args.interval
-    elif env.str('POST_INTERVAL_HOURS', default=None):
-        hours = env.float('POST_INTERVAL_HOURS')
-    else:
-        hours = 4.0
-
+    
+    hours = args.hours
     interval_seconds = hours * 3600
     print(f'Интервал публикации: {hours} ч. ({interval_seconds} сек.)')
 

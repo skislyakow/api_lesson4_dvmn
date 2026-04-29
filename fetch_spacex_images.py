@@ -41,7 +41,9 @@ def fetch_spacex(
 
 def main():
     parser = argparse.ArgumentParser(description='Скачать фото SpaceX')
-    parser.add_argument('-i', '--launch-id', help='ID запуска (опционально)')
+    parser.add_argument(
+        '-i', '--launch-id', default=None, help='ID запуска (опционально)'
+    )
     parser.add_argument(
         '-p', '--use-proxy', action='store_true', help='Использовать прокси'
     )
