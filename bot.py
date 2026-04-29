@@ -5,12 +5,12 @@ import random
 import telegram
 from telegram.error import NetworkError, TimedOut, BadRequest
 from telegram.utils.request import Request
-from environs import Env
 
-from utils import get_proxies
+from utils import get_proxies, load_env
 
 
 def main():
+    env = load_env()
     parser = argparse.ArgumentParser(
         description='Отправка фото через Telegram бота'
     )
@@ -24,8 +24,6 @@ def main():
         help='Путь к изображению (например: images/spacex_0.jpg)'
     )
     args = parser.parse_args()
-    env = Env()
-    env.read_env()
 
     request = None
     if args.use_proxy:
@@ -39,7 +37,6 @@ def main():
         bot = telegram.Bot(
             token=env.str('TELEGRAM_BOT_TOKEN'), request=request
         )
-        print(bot.get_me())
         channel_id = env.str('TELEGRAM_CHANNEL_ID')
         if args.image:
             if '/' not in args.image and '\\' not in args.image:

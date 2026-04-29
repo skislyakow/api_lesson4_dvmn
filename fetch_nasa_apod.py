@@ -2,20 +2,17 @@ import argparse
 import os
 
 import requests
-from environs import Env
 
 from utils import DEFAULT_PATH, DEMO_KEY
-from utils import get_file_extension, get_picture, get_proxies
+from utils import get_file_extension, get_picture, get_proxies, load_env
 
 
 def fetch_apod(
+        api_key: str,
         count: int = 10,
         output_dir: str = DEFAULT_PATH,
         use_proxy: bool = False
 ):
-    env = Env()
-    env.read_env()
-    api_key = env.str('NASA_API_KEY', DEMO_KEY)
     proxies = get_proxies() if use_proxy else None
 
     url = 'https://api.nasa.gov/planetary/apod'
@@ -63,6 +60,8 @@ def fetch_apod(
 
 
 def main():
+    env = load_env()
+    api_key = env.str('NASA_API_KEY', DEMO_KEY)
     parser = argparse.ArgumentParser(description='Скачать APOD-фото NASA')
     parser.add_argument(
         '-n', '--count', type=int, default=10, help='Количество ФОТО'
@@ -72,7 +71,7 @@ def main():
     )
     args = parser.parse_args()
 
-    fetch_apod(args.count)
+    fetch_apod(api_key, args.count)
 
 
 if __name__ == '__main__':

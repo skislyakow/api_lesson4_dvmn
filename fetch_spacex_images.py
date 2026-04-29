@@ -2,9 +2,8 @@ import argparse
 import os
 
 import requests
-from environs import Env
 
-from utils import DEFAULT_PATH, get_file_extension, get_picture, get_proxies
+from utils import DEFAULT_PATH, get_file_extension, get_picture, get_proxies, load_env
 
 
 def fetch_spacex(
@@ -12,8 +11,6 @@ def fetch_spacex(
         output_dir: str = DEFAULT_PATH,
         use_proxy: bool = False
 ):
-    env = Env()
-    env.read_env()
     proxies = get_proxies() if use_proxy else None
 
     if launch_id:
@@ -40,6 +37,7 @@ def fetch_spacex(
 
 
 def main():
+    env = load_env()
     parser = argparse.ArgumentParser(description='Скачать фото SpaceX')
     parser.add_argument(
         '-i', '--launch-id', default=None, help='ID запуска (опционально)'
