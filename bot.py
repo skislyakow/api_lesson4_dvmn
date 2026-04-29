@@ -1,5 +1,6 @@
 import argparse
 import os
+import random
 
 import telegram
 from telegram.error import NetworkError, TimedOut, BadRequest
@@ -43,15 +44,28 @@ def main():
         if args.image:
             if '/' not in args.image and '\\' not in args.image:
                 args.image = os.path.join('images', args.image)
-            if not os.path.exists(args.image):
-                print(f'Файл не найден: {args.image}')
-                return
-            with open(args.image, 'rb') as image:
-                bot.send_photo(chat_id=channel_id, photo=image)
-            print(f'Фото {args.image} отправлено')
+            image_path = args.image
         else:
-            message_text = 'Привет от Python-бота!'
-            bot.send_message(chat_id=channel_id, text=message_text)
+            images_dir = 'images'
+            if not os.path.exists(images_dir):
+                print(f'Папка {images_dir} не найдена!')
+                return
+            files = os.listdir(images_dir)
+            image_files = [
+                f for f in files if os.path.isfile(os.path.join(images_dir, f))
+            ]
+            if not image_files:
+                print(f'В папке {images_dir} нет файлов!')
+                return
+            random_image = random.choice(image_files)
+            image_path = os.path.join(images_dir, random_image)
+            print(f'Выбрано случайное фото: {image_path}')
+        if not os.path.exists(image_path):
+            print(f'Файл не найден: {image_path}')
+            return
+        with open(image_path, 'rb') as image:
+            bot.send_photo(chat_id=channel_id, photo=image)
+        print(f'Фото {image_path} отправлено')
 
     except BadRequest as e:
         print(f'Ошибка запроса (неверный chat_id?): {e}')
