@@ -19,7 +19,8 @@ def main():
     parser.add_argument(
         'image',
         nargs='?',
-        default='Путь к изображению (например: images/spacex_0.jpg)'
+        default=None,
+        help='Путь к изображению (например: images/spacex_0.jpg)'
     )
     args = parser.parse_args()
     env = Env()
@@ -40,6 +41,8 @@ def main():
         print(bot.get_me())
         channel_id = env.str('TELEGRAM_CHANNEL_ID')
         if args.image:
+            if '/' not in args.image and '\\' not in args.image:
+                args.image = os.path.join('images', args.image)
             if not os.path.exists(args.image):
                 print(f'Файл не найден: {args.image}')
                 return
