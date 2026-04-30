@@ -91,7 +91,7 @@ def main():
     )
     args = parser.parse_args()
 
-    fetch_epic(api_key, args.count)
+    fetch_epic(api_key, args.count, use_proxy=args.use_proxy)
 
 
 if __name__ == "__main__":
