@@ -51,11 +51,11 @@ def fetch_epic(
 
     for image_data in images:
         filename = image_data["image"]
-        date_str = filename[8:16]
+        date_range = filename[8:16]
 
-        year = date_str[:4]
-        month = date_str[4:6]
-        day = date_str[6:8]
+        year = date_range[:4]
+        month = date_range[4:6]
+        day = date_range[6:8]
 
         archive_url = (
             f"https://api.nasa.gov/EPIC/archive/natural/"

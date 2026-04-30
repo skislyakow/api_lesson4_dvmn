@@ -40,11 +40,11 @@ def fetch_apod(
         print(f"Ошибка сети: {e}")
         return
 
-    apod_list = response.json()
+    apod_entries = response.json()
 
     os.makedirs(output_dir, exist_ok=True)
 
-    for index, apod in enumerate(apod_list):
+    for index, apod in enumerate(apod_entries):
         url_photo = apod.get("hdurl") or apod.get("url")
         if not url_photo:
             print(f"Фото {index} не имеет URL, пропускаю...")
