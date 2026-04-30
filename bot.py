@@ -33,11 +33,11 @@ def main():
             if proxy_url:
                 request = Request(proxy_url=proxy_url)
 
-    try:
         bot = telegram.Bot(
             token=env.str("TELEGRAM_BOT_TOKEN"), request=request
         )
         channel_id = env.str("TELEGRAM_CHANNEL_ID")
+
         if args.image:
             if "/" not in args.image and "\\" not in args.image:
                 args.image = os.path.join("images", args.image)
@@ -60,14 +60,14 @@ def main():
         if not os.path.exists(image_path):
             print(f"Файл не найден: {image_path}")
             return
-        with open(image_path, "rb") as image:
-            bot.send_photo(chat_id=channel_id, photo=image)
+        try:
+            with open(image_path, "rb") as image:
+                bot.send_photo(chat_id=channel_id, photo=image)
+        except BadRequest as e:
+            print(f"Ошибка запроса (неверный chat_id?): {e}")
+        except (NetworkError, TimedOut) as e:
+            print(f"Ошибка сети при подключении к Telegram: {e}")
         print(f"Фото {image_path} отправлено")
-
-    except BadRequest as e:
-        print(f"Ошибка запроса (неверный chat_id?): {e}")
-    except (NetworkError, TimedOut) as e:
-        print(f"Ошибка сети при подключении к Telegram: {e}")
 
 
 if __name__ == "__main__":
