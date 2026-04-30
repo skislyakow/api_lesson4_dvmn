@@ -50,43 +50,36 @@ def main():
         except BadRequest as e:
             print(f"Ошибка авторизации (неверный токен?): {e}.")
             exit(1)
-        except Exception as e:
-            print(f"Неизвестная ошибка инициализации: {e}. Повтор через 60 с.")
-            time.sleep(60)
 
     image_exts = (".jpg", ".jpeg", ".png", ".gif")
     while True:
-        try:
-            files = [
-                f
-                for f in os.listdir(args.directory)
-                if os.path.isfile(os.path.join(args.directory, f))
-                and f.lower().endswith(image_exts)
-            ]
+        files = [
+            f
+            for f in os.listdir(args.directory)
+            if os.path.isfile(os.path.join(args.directory, f))
+            and f.lower().endswith(image_exts)
+        ]
 
-            if not files:
-                print("Нет файлов для публикации. Жду час...")
-                time.sleep(3600)
+        if not files:
+            print("Нет файлов для публикации. Жду час...")
+            time.sleep(3600)
+            continue
+        random.shuffle(files)
+        print(f"Начинаю цикл из {len(files)} фото.")
+        for filename in files:
+            filepath = os.path.join(args.directory, filename)
+            try:
+                with open(filepath, "rb") as photo:
+                    bot.send_photo(chat_id=channel_id, photo=photo)
+                print(f"Отправлено: {filename}")
+            except (NetworkError, TimedOut) as e:
+                print(f"Ошибка отправки {filename}: {e}. Повтор через 60 с.")
+                time.sleep(60)
                 continue
-            random.shuffle(files)
-            print(f"Начинаю цикл из {len(files)} фото.")
-            for filename in files:
-                filepath = os.path.join(args.directory, filename)
-                try:
-                    with open(filepath, "rb") as photo:
-                        bot.send_photo(chat_id=channel_id, photo=photo)
-                    print(f"Отправлено: {filename}")
-                except (NetworkError, TimedOut) as e:
-                    print(f"Ошибка отправки {filename}: {e}. Повтор через 60 с.")
-                    time.sleep(60)
-                    continue
-                except BadRequest as e:
-                    print(f"Ошибка запроса {filename}: {e}")
-                print(f"Ожидание {hours} ч. до следующего поста...")
-                time.sleep(interval_seconds)
-        except Exception as e:
-            print(f"Критическая ошибка: {e}. Перезапуск через 5 минут.")
-            time.sleep(300)
+            except BadRequest as e:
+                print(f"Ошибка запроса {filename}: {e}")
+            print(f"Ожидание {hours} ч. до следующего поста...")
+            time.sleep(interval_seconds)
 
 
 if __name__ == "__main__":
