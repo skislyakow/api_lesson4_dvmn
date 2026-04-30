@@ -11,7 +11,9 @@ from utils import get_proxies, load_env
 
 def main():
     env = load_env()
-    parser = argparse.ArgumentParser(description="Отправка фото через Telegram бота")
+    parser = argparse.ArgumentParser(
+        description="Отправка фото через Telegram бота"
+    )
     parser.add_argument(
         "-p", "--use-proxy", action="store_true", help="Использовать прокси"
     )
@@ -32,7 +34,9 @@ def main():
                 request = Request(proxy_url=proxy_url)
 
     try:
-        bot = telegram.Bot(token=env.str("TELEGRAM_BOT_TOKEN"), request=request)
+        bot = telegram.Bot(
+            token=env.str("TELEGRAM_BOT_TOKEN"), request=request
+        )
         channel_id = env.str("TELEGRAM_CHANNEL_ID")
         if args.image:
             if "/" not in args.image and "\\" not in args.image:

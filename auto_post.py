@@ -12,12 +12,17 @@ from utils import get_proxies, load_env
 
 def main():
     env = load_env()
-    parser = argparse.ArgumentParser(description="Авто-постинг фото в Telegram канал")
+    parser = argparse.ArgumentParser(
+        description="Авто-постинг фото в Telegram канал"
+    )
     parser.add_argument(
         "directory", nargs="?", default="images", help="Папка с изображениями"
     )
     parser.add_argument(
-        "--interval", type=float, default=4.0, help="Интервал публикации в часах"
+        "--interval",
+        type=float,
+        default=4.0,
+        help="Интервал публикации в часах",
     )
     parser.add_argument(
         "-p", "--use-proxy", action="store_true", help="Использовать прокси"

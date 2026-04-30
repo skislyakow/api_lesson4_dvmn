@@ -14,6 +14,7 @@ def load_env():
     env.read_env()
     return env
 
+
 def get_file_extension(url: str) -> str:
     path_only = urlsplit(url).path
     decoded_url = unquote(path_only)
