@@ -12,12 +12,7 @@ def fetch_spacex(
     use_proxy: bool = False,
 ):
     proxies = get_proxies() if use_proxy else None
-
-    if launch_id:
-        url = f"https://api.spacexdata.com/v5/launches/{launch_id}"
-    else:
-        url = "https://api.spacexdata.com/v5/launches/latest"
-
+    url = f"https://api.spacexdata.com/v5/launches/{launch_id or 'latest'}"
     response = requests.get(url, proxies=proxies)
     response.raise_for_status()
     data = response.json()
