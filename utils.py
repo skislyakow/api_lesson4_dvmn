@@ -17,9 +17,9 @@ def get_file_extension(url: str) -> str:
     return extension
 
 
-def get_picture(url, filepath: str, proxies=None):
+def get_picture(url, filepath: str, proxies=None, params=None):
     Path(filepath).parent.mkdir(parents=True, exist_ok=True)
-    response = requests.get(url, proxies=proxies)
+    response = requests.get(url, params=params, proxies=proxies)
     response.raise_for_status()
     with open(filepath, "wb") as file:
         file.write(response.content)

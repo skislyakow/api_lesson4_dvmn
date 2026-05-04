@@ -56,18 +56,18 @@ def fetch_epic(
         month = date_range[4:6]
         day = date_range[6:8]
 
-        archive_url = (
+        base_url = (
             f"https://api.nasa.gov/EPIC/archive/natural/"
             f"{year}/{month}/{day}/png/{filename}.png"
         )
-        final_url = f"{archive_url}?api_key={api_key}"
+        params = {"api_key": api_key}
 
         time.sleep(0.5)
 
         ext = ".png"
         filepath = os.path.join(output_dir, f"epic_{filename}{ext}")
         try:
-            get_picture(final_url, filepath, proxies)
+            get_picture(base_url, filepath, proxies, params=params)
             print(f"Загружено: epic_{filename}{ext}")
         except requests.exceptions.RequestException as e:
             print(f"Ошибка загрузки {filename}: {e}")
