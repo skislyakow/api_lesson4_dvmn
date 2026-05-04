@@ -8,7 +8,7 @@ from telegram.error import BadRequest, NetworkError, TimedOut
 from telegram.utils.request import Request
 from environs import Env
 
-from utils import get_proxies
+
 
 
 def main():
@@ -37,11 +37,13 @@ def main():
 
     request = None
     if args.use_proxy:
-        proxies = get_proxies()
-        if proxies:
-            proxy_url = proxies.get("https") or proxies.get("http")
-            if proxy_url:
-                request = Request(proxy_url=proxy_url)
+        http_proxy = os.environ.get("HTTP_PROXY")
+        https_proxy = os.environ.get("HTTPS_PROXY")
+        proxy_url = None
+        if http_proxy and https_proxy:
+            proxy_url = https_proxy or http_proxy
+        if proxy_url:
+            request = Request(proxy_url=proxy_url)
 
     bot_token = env.str("TELEGRAM_BOT_TOKEN")
     channel_id = env.str("TELEGRAM_CHANNEL_ID")

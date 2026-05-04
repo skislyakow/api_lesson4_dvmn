@@ -6,17 +6,15 @@ import requests
 from environs import Env
 
 from utils import DEFAULT_PATH, DEMO_KEY
-from utils import get_picture, get_proxies
+from utils import get_picture
 
 
 def fetch_epic(
     api_key: str,
     count: int | None = None,
     output_dir: str = DEFAULT_PATH,
-    use_proxy: bool = False,
+    proxies: dict | None = None,
 ):
-    proxies = get_proxies() if use_proxy else None
-
     url = "https://api.nasa.gov/EPIC/api/natural/"
     try:
         params = {"api_key": api_key}
@@ -79,6 +77,7 @@ def fetch_epic(
 def main():
     env = Env()
     env.read_env()
+
     api_key = env.str("NASA_API_KEY", DEMO_KEY)
     parser = argparse.ArgumentParser(description="Скачать EPIC-фото NASA")
     parser.add_argument(
@@ -93,7 +92,14 @@ def main():
     )
     args = parser.parse_args()
 
-    fetch_epic(api_key, args.count, use_proxy=args.use_proxy)
+    proxies = None
+    if args.use_proxy:
+        http_proxy = os.environ.get("HTTP_PROXY")
+        https_proxy = os.environ.get("HTTPS_PROXY")
+        if http_proxy and https_proxy:
+            proxies = {"http": http_proxy, "https": https_proxy}
+
+    fetch_epic(api_key, args.count, proxies=proxies)
 
 
 if __name__ == "__main__":
