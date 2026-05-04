@@ -2,9 +2,10 @@ import argparse
 import os
 
 import requests
+from environs import Env
 
 from utils import DEFAULT_PATH, DEMO_KEY
-from utils import get_file_extension, get_picture, get_proxies, load_env
+from utils import get_file_extension, get_picture, get_proxies
 
 
 def fetch_apod(
@@ -60,7 +61,8 @@ def fetch_apod(
 
 
 def main():
-    env = load_env()
+    env = Env()
+    env.read_env()
     api_key = env.str("NASA_API_KEY", DEMO_KEY)
     parser = argparse.ArgumentParser(description="Скачать APOD-фото NASA")
     parser.add_argument(

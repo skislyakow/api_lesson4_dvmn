@@ -3,16 +3,10 @@ from pathlib import Path
 from urllib.parse import unquote, urlsplit
 
 import requests
-from environs import Env
+
 
 DEFAULT_PATH = "images"
 DEMO_KEY = "DEMO_KEY"
-
-
-def load_env():
-    env = Env()
-    env.read_env()
-    return env
 
 
 def get_file_extension(url: str) -> str:

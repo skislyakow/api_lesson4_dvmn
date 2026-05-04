@@ -6,12 +6,14 @@ import time
 import telegram
 from telegram.error import BadRequest, NetworkError, TimedOut
 from telegram.utils.request import Request
+from environs import Env
 
-from utils import get_proxies, load_env
+from utils import get_proxies
 
 
 def main():
-    env = load_env()
+    env = Env()
+    env.read_env()
     parser = argparse.ArgumentParser(
         description="Авто-постинг фото в Telegram канал"
     )

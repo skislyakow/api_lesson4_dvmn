@@ -3,9 +3,10 @@ import os
 import time
 
 import requests
+from environs import Env
 
 from utils import DEFAULT_PATH, DEMO_KEY
-from utils import get_picture, get_proxies, load_env
+from utils import get_picture, get_proxies
 
 
 def fetch_epic(
@@ -76,7 +77,8 @@ def fetch_epic(
 
 
 def main():
-    env = load_env()
+    env = Env()
+    env.read_env()
     api_key = env.str("NASA_API_KEY", DEMO_KEY)
     parser = argparse.ArgumentParser(description="Скачать EPIC-фото NASA")
     parser.add_argument(
