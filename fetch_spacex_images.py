@@ -3,16 +3,15 @@ import os
 
 import requests
 
-from utils import DEFAULT_PATH, get_file_extension, get_picture, get_proxies
+from utils import DEFAULT_PATH, get_file_extension, get_picture
 
 
 def fetch_spacex(
-    launch_id: str | None = None,
+    launch_id: str = "latest",
     output_dir: str = DEFAULT_PATH,
-    use_proxy: bool = False,
+    proxies: dict | None = None,
 ):
-    proxies = get_proxies() if use_proxy else None
-    url = f"https://api.spacexdata.com/v5/launches/{launch_id or 'latest'}"
+    url = f"https://api.spacexdata.com/v5/launches/{launch_id}"
     response = requests.get(url, proxies=proxies)
     response.raise_for_status()
     data = response.json()
@@ -41,7 +40,14 @@ def main():
     )
     args = parser.parse_args()
 
-    fetch_spacex(args.launch_id, use_proxy=args.use_proxy)
+    proxies = None
+    if args.use_proxy:
+        http_proxy = os.environ.get("HTTP_PROXY")
+        https_proxy = os.environ.get("HTTPS_PROXY")
+        if http_proxy and https_proxy:
+            proxies = {"http": http_proxy, "https": https_proxy}
+
+    fetch_spacex(args.launch_id, proxies=proxies)
 
 
 if __name__ == "__main__":
